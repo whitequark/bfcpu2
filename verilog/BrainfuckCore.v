@@ -151,6 +151,9 @@ module BrainfuckCore(
 		.clk(clk),
 		.reset(reset),
 
+		.dp_ce(dp_ce),
+		.dp_down(dp_down),
+
 		.operation_in(modify_operation),
 		.ack(modify_ack),
 		.drdy_in(modify_drdy_in),
