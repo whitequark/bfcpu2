@@ -47,7 +47,9 @@ module StageWriteback (
 	output reg [`OPCODE_MSB:0] operation;
 	input                      ack_in;
 
-	/* Writing to DRAM. */
+	/*
+	 * Writing to DRAM
+	 */
 	function should_write_d;
 	input [7:0] operation;
 	begin
@@ -60,7 +62,9 @@ module StageWriteback (
 	assign dce = should_write_d(operation_in);
 	assign dq  = a_in;
 
-	/* Writing to EXT. */
+	/*
+	 * Writing to EXT
+	 */
 	function should_write_x;
 	input [7:0] operation;
 	begin
@@ -74,7 +78,9 @@ module StageWriteback (
 	wire ext_wait;
 	assign ext_wait = (should_write_x(operation_in) && cbsy);
 
-	/* ACKing the previous stage */
+	/*
+	 * ACKing the previous stage
+	 */
 	assign ack = ack_in && !ext_wait;
 
 	always @(posedge clk) begin

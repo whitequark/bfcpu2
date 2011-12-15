@@ -8,6 +8,8 @@ module StageExecute (
 	dp_ce,
 	dp_down,
 
+	dp_cache,
+
 	dce,
 	da,
 	dd,
@@ -50,16 +52,20 @@ module StageExecute (
 
 	output reg [`OPCODE_MSB:0] operation;
 	input      ack_in;
-	
+
 	reg prefetched;
 
 	/*
-	 * Data pointer manipulation.
+	 * Data pointer manipulation
 	 */
 	assign dp_ce   = (operation_in[`OP_INCDP] || operation_in[`OP_DECDP]);
 	assign dp_down =  operation_in[`OP_DECDP];
 
-	/* Reading from DRAM. */
+	output reg [A_WIDTH - 1:0] dp_cache;
+
+	/*
+	 * Reading from DRAM
+	 */
 	function should_fetch_d;
 	input [`OPCODE_MSB:0] operation;
 	begin
@@ -73,7 +79,9 @@ module StageExecute (
 	assign da  = dp;
 	assign dce = should_fetch_d(operation_in);
 
-	/* Writing to EXT */
+	/*
+	 * Reading from EXT
+	 */
 	function should_fetch_x;
 	input [`OPCODE_MSB:0] operation;
 	begin
@@ -87,7 +95,9 @@ module StageExecute (
 	assign ext_wait = (should_fetch_x(operation_in) && !crda) ||
 				(should_fetch_d(operation_in) && !prefetched);
 
-	/* ACKing the previous stage */
+	/*
+	 * ACKing the previous stage
+	 */
 	assign ack = ack_in && !ext_wait;
 
 	always @(posedge clk) begin
@@ -95,6 +105,7 @@ module StageExecute (
 			prefetched <= 0;
 			operation  <= 0;
 
+			dp_cache   <= 0;
 			a          <= 0;
 		end else begin
 			/*
@@ -103,20 +114,23 @@ module StageExecute (
 			 */
 			if (should_fetch_d(operation_in))
 				prefetched <= 1'b1;
-		
+
+			dp_cache   <= dp;
+
 			if (ack_in && ext_wait) begin
 				operation <= 0; /* Bubble */
+				a         <= 0;
 			end else if(ack_in) begin
 				operation <= operation_in;
 
-				if (should_fetch_d(operation_in) && prefetched) begin
+				if (should_fetch_d(operation_in) && prefetched)
 					if (operation[`OP_INC])
 						a   <= dd + 1;
 					else if (operation[`OP_DEC])
 						a   <= dd - 1;
 					else
 						a   <= dd;
-				end else if (should_fetch_x(operation_in) && crda)
+				else if (should_fetch_x(operation_in) && crda)
 					a      <= cd;
 				else
 					a      <= 0;

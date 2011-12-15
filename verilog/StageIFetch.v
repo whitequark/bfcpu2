@@ -41,7 +41,7 @@ module StageIFetch (
 	 * _now_, we should increase it _then_.
 	 */
 	assign step_pc = !reset && (ack_in && prefetched);
-	
+
 	reg prefetched;
 
 	always @(posedge clk) begin

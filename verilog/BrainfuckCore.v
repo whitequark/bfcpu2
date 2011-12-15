@@ -97,6 +97,7 @@ module BrainfuckCore(
 
 	wire [`OPCODE_MSB:0]  writeback_operation;
 	wire                  writeback_ack;
+	wire [DA_WIDTH - 1:0] writeback_dp;
 
 	/*
 	 * Fetch instruction, taking memory delays into
@@ -158,6 +159,9 @@ module BrainfuckCore(
 		.dp_ce(dp_ce),
 		.dp_down(dp_down),
 
+		/* DP register cache, to avoid WAW(mem,dp) hazard */
+		.dp_cache(writeback_dp),
+
 		/* DRAM read port interface */
 		.dce(drce),
 		.da(dra),
@@ -189,7 +193,7 @@ module BrainfuckCore(
 		.reset(reset),
 
 		/* DP register value, to write a datum */
-		.dp(dp),
+		.dp(writeback_dp),
 
 		/* DRAM write port interface */
 		.dce(dwce),
@@ -276,7 +280,7 @@ module BrainfuckCoreTest;
 		crda = 0;
 
 		`reset
-		
+
 		#160; crda = 1; cd = 8'h42;
 		#20; crda = 0; cd = 0;
 	end
