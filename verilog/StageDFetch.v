@@ -12,15 +12,17 @@ module StageDFetch (
 	da,
 	dd,
 
+	cd,
+	crda,
+	cack,
+
 	a,
 
 	operation_in,
 	ack_in,
-	drdy,
 
 	operation,
-	ack,
-	drdy_in
+	ack
 );
 
 	parameter A_WIDTH = 12;
@@ -37,29 +39,25 @@ module StageDFetch (
 	output     [A_WIDTH - 1:0] da;
 	input      [D_WIDTH - 1:0] dd;
 
+	input                [7:0] cd;
+	input                      crda;
+	output                     cack;
+
 	output reg [D_WIDTH - 1:0] a;
 
 	input      [`OPCODE_MSB:0] operation_in;
-	input      drdy_in;
 	output     ack;
 
 	output reg [`OPCODE_MSB:0] operation;
-	output reg drdy;
 	input      ack_in;
-
-	assign ack = ack_in;
 
 	/*
 	 * Data pointer manipulation.
-	 * This can be done with assign`s because dfetch never stalls the
-	 * pipeline.
 	 */
 	assign dp_ce   = (operation_in[`OP_INCDP] || operation_in[`OP_DECDP]);
 	assign dp_down =  operation_in[`OP_DECDP];
 
 	/* Reading from DRAM. */
-	reg queued_d;
-
 	function should_fetch_d;
 	input [`OPCODE_MSB:0] operation;
 	begin
@@ -70,25 +68,42 @@ module StageDFetch (
 	endfunction
 
 	assign da  = dp;
-	assign dce = !reset && should_fetch_d(operation_in);
+	assign dce = should_fetch_d(operation_in);
+
+	/* Writing to EXT */
+	function should_fetch_x;
+	input [`OPCODE_MSB:0] operation;
+	begin
+		should_fetch_x = operation[`OP_IN];
+	end
+	endfunction
+
+	assign cack = crda && should_fetch_x(operation_in);
+
+	wire ext_wait;
+	assign ext_wait = (should_fetch_x(operation_in) && !crda);
+
+	/* ACKing the previous stage */
+	assign ack = ack_in && !ext_wait;
 
 	always @(posedge clk) begin
 		if (reset) begin
 			operation <= 0;
-			drdy      <= 0;
 
 			a         <= 0;
-			queued_d  <= 0;
 		end else begin
-			operation <= operation_in;
-			drdy      <= drdy_in;
+			if (ack_in && ext_wait) begin
+				operation <= 0; /* Bubble */
+			end else if(ack_in) begin
+				operation <= operation_in;
 
-			if (queued_d)
-				a      <= dd;
-			else
-				a      <= 0;
-
-			queued_d  <= should_fetch_d(operation_in);
+				if (should_fetch_d(operation_in))
+					a      <= dd;
+				else if (should_fetch_x(operation_in) && crda)
+					a      <= cd;
+				else
+					a      <= 0;
+			end
 		end
 	end
 

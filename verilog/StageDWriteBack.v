@@ -10,6 +10,10 @@ module StageDWriteBack (
 	da,
 	dq,
 
+	cq,
+	cwre,
+	cbsy,
+
 	a_in,
 
 	operation_in,
@@ -31,7 +35,11 @@ module StageDWriteBack (
 
 	output                     dce;
 	output     [A_WIDTH - 1:0] da;
-	output reg [D_WIDTH - 1:0] dq;
+	output     [D_WIDTH - 1:0] dq;
+
+	output               [7:0] cq;
+	output                     cwre;
+	input                      cbsy;
 
 	input      [D_WIDTH - 1:0] a_in;
 
@@ -43,11 +51,7 @@ module StageDWriteBack (
 	output reg drdy;
 	input      ack_in;
 
-	assign ack = ack_in;
-
 	/* Writing to DRAM. */
-	reg queued_d;
-
 	function should_write_d;
 	input [7:0] operation;
 	begin
@@ -56,26 +60,35 @@ module StageDWriteBack (
 	end
 	endfunction
 
-	assign da = dp;
-	assign dce = !reset && queued_d;
+	assign da  = dp;
+	assign dce = should_write_d(operation_in);
+	assign dq  = a_in;
+
+	/* Writing to EXT. */
+	function should_write_x;
+	input [7:0] operation;
+	begin
+		should_write_x = operation[`OP_OUT];
+	end
+	endfunction
+
+	assign cq   = a_in;
+	assign cwre = !cbsy && should_write_x(operation_in);
+
+	wire ext_wait;
+	assign ext_wait = (should_write_x(operation_in) && cbsy);
+
+	/* ACKing the previous stage */
+	assign ack = ack_in && !ext_wait;
 
 	always @(posedge clk) begin
 		if (reset) begin
 			operation <= 0;
-			drdy      <= 0;
-
-			queued_d  <= 0;
 		end else begin
-			operation <= operation_in;
-			drdy      <= drdy_in;
-
-			if (should_write_d(operation_in)) begin
-				dq       <= a_in;
-				queued_d <= 1'b1;
-			end else begin
-				dq       <= 0;
-				queued_d <= 0;
-			end
+			if (ack_in && !ext_wait)
+				operation <= operation_in;
+			else if (ack_in)
+				operation <= 0; /* Bubble */
 		end
 	end
 

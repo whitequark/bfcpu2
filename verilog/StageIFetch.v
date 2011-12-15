@@ -11,8 +11,7 @@ module StageIFetch (
 	step_pc,
 
 	opcode,
-	ack_in,
-	drdy
+	ack_in
 );
 
 	parameter A_WIDTH = 12;
@@ -31,36 +30,24 @@ module StageIFetch (
 
 	output reg [D_WIDTH - 1:0] opcode;
 
-	output reg drdy;
-	input      ack_in;
-
-	reg queued;
-
-	wire should_fetch = (!drdy || ack_in);
+	input                      ack_in;
 
 	assign ia  = pc;
-	assign ice = !reset && should_fetch;
+	assign ice = !reset && ack_in;
 
 	/*
 	 * step_pc=1 means that at the _next_ cycle PC will be
 	 * increased. Thus, if we will do a successful fetch
 	 * _now_, we should increase it _then_.
 	 */
-	assign step_pc = !reset && should_fetch;
+	assign step_pc = !reset && ack_in;
 
 	always @(posedge clk) begin
 		if (reset) begin
 			opcode  <= 0;
-			drdy    <= 0;
-			queued  <= 0;
 		end else begin
-			if (queued)
+			if (ack_in)
 				opcode <= id;
-			else
-				opcode <= 0;
-
-			drdy    <= queued;
-			queued  <= should_fetch;
 		end
 	end
 

@@ -6,17 +6,30 @@ module BrainfuckCore(
 	clk,
 	reset,
 
+	/* IROM interface */
 	ice,
 	ia,
 	id,
 
+	/* DRAM read port */
 	drce,
 	dra,
 	drd,
 
+	/* DRAM write port */
 	dwce,
 	dwa,
-	dwq
+	dwq,
+
+	/* EXT read port */
+	cd,
+	crda,
+	cack,
+
+	/* EXT write port */
+	cq,
+	cwre,
+	cbsy
 );
 
 	parameter IA_WIDTH = 12;
@@ -67,23 +80,27 @@ module BrainfuckCore(
 	input  [DD_WIDTH - 1:0] drd;
 	output [DD_WIDTH - 1:0] dwq;
 
+	input  [7:0] cd;
+	input        crda;
+	output       cack;
+
+	input  [7:0] cq;
+	output       cwre;
+	input        cbsy;
+
 	wire [ID_WIDTH - 1:0] idecode_opcode;
 	wire                  idecode_ack;
-	wire                  idecode_drdy_in;
 
 	wire [`OPCODE_MSB:0]  dfetch_operation;
 	wire                  dfetch_ack;
-	wire                  dfetch_drdy_in;
 	wire [DD_WIDTH - 1:0] dfetch_a;
 
 	wire [`OPCODE_MSB:0]  modify_operation;
 	wire                  modify_ack;
-	wire                  modify_drdy_in;
 	wire [DD_WIDTH - 1:0] modify_a;
 
 	wire [`OPCODE_MSB:0]  dwriteback_operation;
 	wire                  dwriteback_ack;
-	wire                  dwriteback_drdy_in;
 
 	/*
 	 * Fetch instruction, taking memory delays into
@@ -108,8 +125,7 @@ module BrainfuckCore(
 		.id(id),
 
 		.opcode(idecode_opcode),
-		.ack_in(idecode_ack),
-		.drdy(idecode_drdy_in)
+		.ack_in(idecode_ack)
 	);
 
 	/*
@@ -121,11 +137,9 @@ module BrainfuckCore(
 
 		.opcode_in(idecode_opcode),
 		.ack(idecode_ack),
-		.drdy_in(idecode_drdy_in),
 
 		.operation(dfetch_operation),
-		.ack_in(dfetch_ack),
-		.drdy(dfetch_drdy_in)
+		.ack_in(dfetch_ack)
 	);
 
 	/*
@@ -165,16 +179,19 @@ module BrainfuckCore(
 		.da(dra),
 		.dd(drd),
 
+		/* EXT read port interface */
+		.cd(cd),
+		.crda(crda),
+		.cack(cack),
+
 		/* Accumulator output */
 		.a(dfetch_a),
 
 		.operation_in(dfetch_operation),
 		.ack(dfetch_ack),
-		.drdy_in(dfetch_drdy_in),
 
 		.operation(modify_operation),
-		.ack_in(modify_ack),
-		.drdy(modify_drdy_in)
+		.ack_in(modify_ack)
 	);
 
 	/*
@@ -191,11 +208,9 @@ module BrainfuckCore(
 
 		.operation_in(modify_operation),
 		.ack(modify_ack),
-		.drdy_in(modify_drdy_in),
 
 		.operation(dwriteback_operation),
-		.ack_in(dwriteback_ack),
-		.drdy(dwriteback_drdy_in)
+		.ack_in(dwriteback_ack)
 	);
 
 	/*
@@ -216,12 +231,16 @@ module BrainfuckCore(
 		.da(dwa),
 		.dq(dwq),
 
+		/* EXT write port interface */
+		.cq(cq),
+		.cwre(cwre),
+		.cbsy(cbsy),
+
 		/* Accumulator input */
 		.a_in(modify_a),
 
 		.operation_in(dwriteback_operation),
 		.ack(dwriteback_ack),
-		.drdy_in(dwriteback_drdy_in),
 
 		/* The last stage has ACK always asserted. */
 		.ack_in(1'b1)
@@ -239,6 +258,10 @@ module BrainfuckCoreTest;
 	wire [7:0] id;
 	wire [7:0] drd;
 	wire [7:0] dwq;
+	wire cack, cwre;
+	reg  crda, cbsy;
+	reg  [7:0] cd;
+	wire [7:0] cq;
 
 	BrainfuckCore uut (
 		.clk(clk),
@@ -254,7 +277,15 @@ module BrainfuckCoreTest;
 
 		.dwce(dwce),
 		.dwa(dwa),
-		.dwq(dwq)
+		.dwq(dwq),
+
+		.cd(cd),
+		.crda(crda),
+		.cack(cack),
+
+		.cq(cq),
+		.cwre(cwre),
+		.cbsy(cbsy)
 	);
 
 	IROM irom (
@@ -284,4 +315,18 @@ module BrainfuckCoreTest;
 	always begin
 		`step
 	end
+
+	reg [1:0] uart_wait = 2'b00;
+	always @(posedge clk) begin
+		if (cwre) begin
+			cbsy      <= 1'b1;
+			uart_wait <= 2'b11;
+		end else begin
+			if (uart_wait)
+				uart_wait <= uart_wait - 1;
+			else
+				cbsy   <= 1'b0;
+		end
+	end
+
 endmodule

@@ -6,32 +6,27 @@ module StageIDecode (
 
 	opcode_in,
 	ack,
-	drdy_in,
 
 	operation,
-	ack_in,
-	drdy
+	ack_in
 );
 
 	input clk;
 	input reset;
 
-	input      [7:0] opcode_in;
-	output           ack;
-	input            drdy_in;
+	input                [7:0] opcode_in;
+	output                     ack;
 
 	output reg [`OPCODE_MSB:0] operation;
-	input            ack_in;
-	output reg       drdy;
+	input                      ack_in;
 
 	assign ack = ack_in;
 
 	always @(posedge clk) begin
 		if (reset) begin
 			operation <= 0;
-			drdy      <= 0;
 		end else begin
-			if (drdy_in) begin
+			if (ack_in) begin
 				case (opcode_in)
 					8'h3E:   operation <= 8'b0000_0001;
 					8'h3C:   operation <= 8'b0000_0010;
@@ -41,13 +36,9 @@ module StageIDecode (
 					8'h2C:   operation <= 8'b0010_0000;
 					8'h5B:   operation <= 8'b0100_0000;
 					8'h5D:   operation <= 8'b1000_0000;
+
 					default: operation <= 8'b0000_0000;
 				endcase
-
-				drdy      <= 1'b1;
-			end else begin
-				operation <= 8'b0000_0000;
-				drdy      <= 1'b0;
 			end
 		end
 	end
