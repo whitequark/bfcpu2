@@ -40,13 +40,19 @@ module StageIFetch (
 	 * increased. Thus, if we will do a successful fetch
 	 * _now_, we should increase it _then_.
 	 */
-	assign step_pc = !reset && ack_in;
+	assign step_pc = !reset && (ack_in && prefetched);
+	
+	reg prefetched;
 
 	always @(posedge clk) begin
 		if (reset) begin
-			opcode  <= 0;
+			prefetched <= 0;
+
+			opcode     <= 0;
 		end else begin
-			if (ack_in)
+			prefetched <= 1'b1;
+
+			if (ack_in && prefetched)
 				opcode <= id;
 		end
 	end

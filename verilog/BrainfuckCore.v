@@ -91,20 +91,17 @@ module BrainfuckCore(
 	wire [ID_WIDTH - 1:0] idecode_opcode;
 	wire                  idecode_ack;
 
-	wire [`OPCODE_MSB:0]  dfetch_operation;
-	wire                  dfetch_ack;
-	wire [DD_WIDTH - 1:0] dfetch_a;
+	wire [`OPCODE_MSB:0]  execute_operation;
+	wire                  execute_ack;
+	wire [DD_WIDTH - 1:0] execute_a;
 
-	wire [`OPCODE_MSB:0]  modify_operation;
-	wire                  modify_ack;
-	wire [DD_WIDTH - 1:0] modify_a;
-
-	wire [`OPCODE_MSB:0]  dwriteback_operation;
-	wire                  dwriteback_ack;
+	wire [`OPCODE_MSB:0]  writeback_operation;
+	wire                  writeback_ack;
 
 	/*
 	 * Fetch instruction, taking memory delays into
 	 * account.
+	 * This stage prefetches one instruction.
 	 */
 	StageIFetch #(
 		.A_WIDTH(IA_WIDTH),
@@ -138,32 +135,19 @@ module BrainfuckCore(
 		.opcode_in(idecode_opcode),
 		.ack(idecode_ack),
 
-		.operation(dfetch_operation),
-		.ack_in(dfetch_ack)
+		.operation(execute_operation),
+		.ack_in(execute_ack)
 	);
 
 	/*
-	 * Fetch data byte from DRAM or I/O module or manipulate data pointer.
-	 * Data pointer manipulation is done at this stage because
-	 * at the next one it may be too late.
-	 *
-	 *             v
-	 * IF   |>|+|...
-	 * ID     |>|+|...
-	 * DF       |>(+)...
-	 *  M         [>]+|...
-	 * DWB          |>|+|...
-	 *
-	 * At the figure above (a theoretical case where DP is manipulated
-	 * by M stage), the DP is going to be incremented (point [>]), but
-	 * at the exact same time current value will be read to accumulator
-	 * (point (+)), and the old DP value will be latched into the RAM.
-	 * Thus, the value will be read from cell DP-1 instead of DP.
+	 * Execute the instruction.
+	 * This stage prefetches one datum and maintains cache consistency
+	 * on data pointer updates.
 	 */
-	StageDFetch #(
+	StageExecute #(
 		.A_WIDTH(DA_WIDTH),
 		.D_WIDTH(DD_WIDTH)
-	) dfetch (
+	) execute (
 		.clk(clk),
 		.reset(reset),
 
@@ -185,41 +169,22 @@ module BrainfuckCore(
 		.cack(cack),
 
 		/* Accumulator output */
-		.a(dfetch_a),
+		.a(execute_a),
 
-		.operation_in(dfetch_operation),
-		.ack(dfetch_ack),
+		.operation_in(execute_operation),
+		.ack(execute_ack),
 
-		.operation(modify_operation),
-		.ack_in(modify_ack)
-	);
-
-	/*
-	 * Perform arithmetic processing on accumulator
-	 * or pass the value as is.
-	 */
-	StageModify modify (
-		.clk(clk),
-		.reset(reset),
-
-		/* Accumulator input and output */
-		.a_in(dfetch_a),
-		.a(modify_a),
-
-		.operation_in(modify_operation),
-		.ack(modify_ack),
-
-		.operation(dwriteback_operation),
-		.ack_in(dwriteback_ack)
+		.operation(writeback_operation),
+		.ack_in(writeback_ack)
 	);
 
 	/*
 	 * Write accumulator back to DRAM or to I/O module.
 	 */
-	StageDWriteBack #(
+	StageWriteback #(
 		.A_WIDTH(DA_WIDTH),
 		.D_WIDTH(DD_WIDTH)
-	) dwriteback (
+	) writeback (
 		.clk(clk),
 		.reset(reset),
 
@@ -237,10 +202,10 @@ module BrainfuckCore(
 		.cbsy(cbsy),
 
 		/* Accumulator input */
-		.a_in(modify_a),
+		.a_in(execute_a),
 
-		.operation_in(dwriteback_operation),
-		.ack(dwriteback_ack),
+		.operation_in(writeback_operation),
+		.ack(writeback_ack),
 
 		/* The last stage has ACK always asserted. */
 		.ack_in(1'b1)
@@ -308,8 +273,12 @@ module BrainfuckCoreTest;
 	initial begin
 		clk = 0;
 		reset = 0;
+		crda = 0;
 
 		`reset
+		
+		#160; crda = 1; cd = 8'h42;
+		#20; crda = 0; cd = 0;
 	end
 
 	always begin

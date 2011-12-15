@@ -1,6 +1,6 @@
 `include "Constants.v"
 
-module StageDWriteBack (
+module StageWriteback (
 	clk,
 	reset,
 
