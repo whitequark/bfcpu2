@@ -78,21 +78,21 @@ module BrainfuckCore(
 		.wd(dwd)
 	);
 
-	wire [ID_WIDTH - 1:0] ifetch_opcode;
-	wire                  ifetch_ack_in;
-	wire                  ifetch_drdy;
-
-	wire [`OPCODE_MSB:0]  idecode_operation;
-	wire                  idecode_ack_in;
-	wire                  idecode_drdy;
+	wire [ID_WIDTH - 1:0] idecode_opcode;
+	wire                  idecode_ack;
+	wire                  idecode_drdy_in;
 
 	wire [`OPCODE_MSB:0]  dfetch_operation;
-	wire                  dfetch_ack_in;
-	wire                  dfetch_drdy;
+	wire                  dfetch_ack;
+	wire                  dfetch_drdy_in;
 
 	wire [`OPCODE_MSB:0]  modify_operation;
-	wire                  modify_ack_in;
-	wire                  modify_drdy;
+	wire                  modify_ack;
+	wire                  modify_drdy_in;
+
+	wire [`OPCODE_MSB:0]  dwriteback_operation;
+	wire                  dwriteback_ack;
+	wire                  dwriteback_drdy_in;
 
 	StageIFetch #(
 		.A_WIDTH(IA_WIDTH),
@@ -107,9 +107,9 @@ module BrainfuckCore(
 		.id(iq),
 		.step_pc(pc_ce),
 
-		.opcode(ifetch_opcode),
-		.ack_in(ifetch_ack_in),
-		.drdy(ifetch_drdy)
+		.opcode(idecode_opcode),
+		.ack_in(idecode_ack),
+		.drdy(idecode_drdy_in)
 	);
 
 	/* IDecode has fixed 8 bit width */
@@ -117,13 +117,13 @@ module BrainfuckCore(
 		.clk(clk),
 		.reset(reset),
 
-		.opcode_in(ifetch_opcode),
-		.ack(ifetch_ack_in),
-		.drdy_in(ifetch_drdy),
+		.opcode_in(idecode_opcode),
+		.ack(idecode_ack),
+		.drdy_in(idecode_drdy_in),
 
-		.operation(idecode_operation),
-		.ack_in(idecode_ack_in),
-		.drdy(idecode_drdy)
+		.operation(dfetch_operation),
+		.ack_in(dfetch_ack),
+		.drdy(dfetch_drdy_in)
 	);
 
 	StageDFetch #(
@@ -138,26 +138,26 @@ module BrainfuckCore(
 		.da(dra),
 		.dd(drq),
 
-		.operation_in(idecode_operation),
-		.ack(idecode_ack_in),
-		.drdy_in(idecode_drdy),
+		.operation_in(dfetch_operation),
+		.ack(dfetch_ack),
+		.drdy_in(dfetch_drdy_in),
 
-		.operation(dfetch_operation),
-		.ack_in(dfetch_ack_in),
-		.drdy(dfetch_drdy)
+		.operation(modify_operation),
+		.ack_in(modify_ack),
+		.drdy(modify_drdy_in)
 	);
 
 	StageModify modify (
 		.clk(clk),
 		.reset(reset),
 
-		.operation_in(dfetch_operation),
-		.ack(dfetch_ack_in),
-		.drdy_in(dfetch_drdy),
+		.operation_in(modify_operation),
+		.ack(modify_ack),
+		.drdy_in(modify_drdy_in),
 
-		.operation(modify_operation),
-		.ack_in(modify_ack_in),
-		.drdy(modify_drdy)
+		.operation(dwriteback_operation),
+		.ack_in(dwriteback_ack),
+		.drdy(dwriteback_drdy_in)
 	);
 
 	StageDWriteBack #(
@@ -172,9 +172,9 @@ module BrainfuckCore(
 		.da(dwa),
 		.dq(dwd),
 
-		.operation_in(modify_operation),
-		.ack(modify_ack_in),
-		.drdy_in(modify_drdy),
+		.operation_in(dwriteback_operation),
+		.ack(dwriteback_ack),
+		.drdy_in(dwriteback_drdy_in),
 
 		/* The last stage has ACK always asserted. */
 		.ack_in(1'b1)
