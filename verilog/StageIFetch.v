@@ -41,7 +41,12 @@ module StageIFetch (
 	assign ia  = pc;
 	assign ice = !reset && should_fetch;
 
-	assign step_pc = !reset && queued;
+	/*
+	 * step_pc=1 means that at the _next_ cycle PC will be
+	 * increased. Thus, if we will do a successful fetch
+	 * _now_, we should increase it _then_.
+	 */
+	assign step_pc = !reset && should_fetch;
 
 	always @(posedge clk) begin
 		if (reset) begin
