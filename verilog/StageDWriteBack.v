@@ -43,6 +43,7 @@ module StageDWriteBack (
 	output reg drdy;
 	input      ack_in;
 
+	/* Writing to DRAM. */
 	reg queued_d;
 
 	function should_write_d;

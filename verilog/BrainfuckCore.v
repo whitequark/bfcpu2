@@ -4,7 +4,19 @@
 
 module BrainfuckCore(
 	clk,
-	reset
+	reset,
+
+	ice,
+	ia,
+	id,
+
+	drce,
+	dra,
+	drd,
+
+	dwce,
+	dwa,
+	dwq
 );
 
 	parameter IA_WIDTH = 12;
@@ -45,38 +57,15 @@ module BrainfuckCore(
 		.down(dp_down)
 	);
 
-	wire ice;
-	wire [IA_WIDTH - 1:0] ia;
-	wire [ID_WIDTH - 1:0] iq;
+	output ice;
+	output [IA_WIDTH - 1:0] ia;
+	input  [ID_WIDTH - 1:0] id;
 
-	IROM #(
-		.A_WIDTH(IA_WIDTH),
-		.D_WIDTH(ID_WIDTH)
-	) irom (
-		.clk(clk),
-		.ce(ice),
-		.a(ia),
-		.q(iq)
-	);
-
-	wire drce, dwce;
-	wire [DA_WIDTH - 1:0] dra;
-	wire [DA_WIDTH - 1:0] dwa;
-	wire [DD_WIDTH - 1:0] drq;
-	wire [DD_WIDTH - 1:0] dwd;
-
-	DRAM #(
-		.A_WIDTH(DA_WIDTH),
-		.D_WIDTH(DD_WIDTH)
-	) dram (
-		.clk(clk),
-		.rce(drce),
-		.ra(dra),
-		.rq(drq),
-		.wce(dwce),
-		.wa(dwa),
-		.wd(dwd)
-	);
+	output drce, dwce;
+	output [DA_WIDTH - 1:0] dra;
+	output [DA_WIDTH - 1:0] dwa;
+	input  [DD_WIDTH - 1:0] drd;
+	output [DD_WIDTH - 1:0] dwq;
 
 	wire [ID_WIDTH - 1:0] idecode_opcode;
 	wire                  idecode_ack;
@@ -110,7 +99,7 @@ module BrainfuckCore(
 		.pc(pc),
 		.ice(ice),
 		.ia(ia),
-		.id(iq),
+		.id(id),
 		.step_pc(pc_ce),
 
 		.opcode(idecode_opcode),
@@ -135,7 +124,7 @@ module BrainfuckCore(
 	);
 
 	/*
-	 * Fetch data byte or manipulate data pointer.
+	 * Fetch data byte from DRAM or I/O module or manipulate data pointer.
 	 * Data pointer manipulation is done at this stage because
 	 * at the next one it may be too late.
 	 *
@@ -165,7 +154,7 @@ module BrainfuckCore(
 
 		.dce(drce),
 		.da(dra),
-		.dd(drq),
+		.dd(drd),
 
 		.a(dfetch_a),
 
@@ -178,6 +167,10 @@ module BrainfuckCore(
 		.drdy(modify_drdy_in)
 	);
 
+	/*
+	 * Perform arithmetic processing on accumulator
+	 * or pass the value as is.
+	 */
 	StageModify modify (
 		.clk(clk),
 		.reset(reset),
@@ -194,6 +187,9 @@ module BrainfuckCore(
 		.drdy(dwriteback_drdy_in)
 	);
 
+	/*
+	 * Write accumulator back to DRAM or to I/O module.
+	 */
 	StageDWriteBack #(
 		.A_WIDTH(DA_WIDTH),
 		.D_WIDTH(DD_WIDTH)
@@ -204,7 +200,7 @@ module BrainfuckCore(
 		.dp(dp),
 		.dce(dwce),
 		.da(dwa),
-		.dq(dwd),
+		.dq(dwq),
 
 		.a_in(modify_a),
 
@@ -221,9 +217,46 @@ module BrainfuckCoreTest;
 	reg clk;
 	reg reset;
 
+	wire ce, drce, dwce;
+	wire [11:0] ia;
+	wire [11:0] dra;
+	wire [11:0] dwa;
+	wire [7:0] id;
+	wire [7:0] drd;
+	wire [7:0] dwq;
+
 	BrainfuckCore uut (
 		.clk(clk),
-		.reset(reset)
+		.reset(reset),
+
+		.ice(ice),
+		.ia(ia),
+		.id(id),
+
+		.drce(drce),
+		.dra(dra),
+		.drd(drd),
+
+		.dwce(dwce),
+		.dwa(dwa),
+		.dwq(dwq)
+	);
+
+	IROM irom (
+		.clk(clk),
+		.ce(ice),
+		.a(ia),
+		.q(id)
+	);
+
+	DRAM dram (
+		.clk(clk),
+		.rce(drce),
+		.ra(dra),
+		.rq(drd),
+		.wce(dwce),
+		.wa(dwa),
+		.wd(dwq)
 	);
 
 	initial begin
