@@ -1,15 +1,15 @@
-module StageIFetch(
+module StageIFetch (
 	clk,
 	reset,
-	
+
 	pc,
-	
+
 	ice,
 	ia,
 	id,
-	
+
 	step_pc,
-	
+
 	opcode,
 	ack_in,
 	drdy
@@ -22,11 +22,11 @@ module StageIFetch(
 	input reset;
 
 	input      [A_WIDTH - 1:0] pc;
-	
+
 	output                     ice;
 	output     [A_WIDTH - 1:0] ia;
-   input      [D_WIDTH - 1:0] id;
-	
+	input      [D_WIDTH - 1:0] id;
+
 	output                     step_pc;
 
 	output reg [D_WIDTH - 1:0] opcode;
@@ -35,14 +35,14 @@ module StageIFetch(
 	input      ack_in;
 
 	reg queued;
-	
+
 	wire should_fetch = (!drdy || ack_in);
 
 	assign ia  = pc;
 	assign ice = !reset && should_fetch;
-	
+
 	assign step_pc = !reset && queued;
-	
+
 	always @(posedge clk) begin
 		if (reset) begin
 			opcode  <= 0;

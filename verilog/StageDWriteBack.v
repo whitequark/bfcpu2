@@ -1,19 +1,19 @@
 `include "Constants.v"
 
-module StageDWriteBack(
+module StageDWriteBack (
 	clk,
 	reset,
-	
+
 	dp,
-	
+
 	dce,
 	da,
 	dq,
-	
+
 	operation_in,
 	ack_in,
 	drdy,
-	
+
 	operation,
 	ack,
 	drdy_in
@@ -26,10 +26,10 @@ module StageDWriteBack(
 	input reset;
 
 	input      [A_WIDTH - 1:0] dp;
-	
+
 	output                     dce;
 	output     [A_WIDTH - 1:0] da;
-   output reg [D_WIDTH - 1:0] dq;
+	output reg [D_WIDTH - 1:0] dq;
 
 	input      [`OPCODE_MSB:0] operation_in;
 	input      drdy_in;

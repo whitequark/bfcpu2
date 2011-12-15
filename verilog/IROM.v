@@ -11,11 +11,11 @@ module IROM (
 
 	input  clk;
 	input  ce;
-	
+
 	input      [A_WIDTH - 1:0] a;
 	output reg [D_WIDTH - 1:0] q;
 
-	reg [D_WIDTH - 1:0] memory[0:A_DEPTH - 1];
+	reg        [D_WIDTH - 1:0] memory[0:A_DEPTH - 1];
 
 	always @(posedge clk) begin
 		if(ce)

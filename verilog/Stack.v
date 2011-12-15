@@ -9,14 +9,14 @@ module Stack (
 
 	parameter WIDTH = 11;
 	parameter DEPTH = 7;
-	
+
 	input                    clk;
 	input                    reset;
 	input      [WIDTH - 1:0] d;
 	output reg [WIDTH - 1:0] q;
 	input                    push;
 	input                    pop;
-	
+
 	reg [DEPTH - 1:0] ptr;
 	reg [WIDTH - 1:0] stack [0:(1 << DEPTH) - 1];
 

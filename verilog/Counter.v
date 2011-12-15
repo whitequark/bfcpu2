@@ -1,23 +1,23 @@
-module Counter(
+module Counter (
    clk,
    reset,
-	ce,
+   ce,
    d,
    q,
    load,
    down
 );
-	 
+
 	parameter WIDTH = 8;
 
-	input							 clk;
-	input							 reset;
+	input                    clk;
+	input                    reset;
 	input                    ce;
 	input      [WIDTH - 1:0] d;
 	output reg [WIDTH - 1:0] q;
 	input                    load;
 	input                    down;
-	
+
 	always @(posedge clk) begin
 		if (reset)
 			q <= 0;

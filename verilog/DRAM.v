@@ -13,16 +13,16 @@ module DRAM (
 	parameter A_DEPTH = (1 << A_WIDTH);
 
 	input  clk;
-	
+
 	input                      rce;
 	input      [A_WIDTH - 1:0] ra;
 	output reg [D_WIDTH - 1:0] rq;
-	
+
 	input                      wce;
 	input      [A_WIDTH - 1:0] wa;
 	input      [D_WIDTH - 1:0] wd;
 
-	reg [D_WIDTH - 1:0] memory[0:A_DEPTH - 1];
+	reg        [D_WIDTH - 1:0] memory[0:A_DEPTH - 1];
 
 	always @(posedge clk) begin
 		if (rce)

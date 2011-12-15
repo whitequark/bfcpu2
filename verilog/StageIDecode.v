@@ -1,13 +1,13 @@
 `include "Constants.v"
 
-module StageIDecode(
+module StageIDecode (
 	clk,
 	reset,
-	
+
 	opcode_in,
 	ack,
 	drdy_in,
-	
+
 	operation,
 	ack_in,
 	drdy
@@ -19,11 +19,11 @@ module StageIDecode(
 	input      [7:0] opcode_in;
 	output reg       ack;
 	input            drdy_in;
-	
+
 	output reg [`OPCODE_MSB:0] operation;
 	input            ack_in;
 	output reg       drdy;
-	
+
 	always @(posedge clk) begin
 		if (reset) begin
 			operation <= 0;
@@ -44,7 +44,7 @@ module StageIDecode(
 					8'h5D:   operation <= 8'b1000_0000;
 					default: operation <= 8'b0000_0000;
 				endcase
-		
+
 				drdy      <= 1'b1;
 			end else begin
 				operation <= 8'b0000_0000;

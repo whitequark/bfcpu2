@@ -1,19 +1,19 @@
 `include "Constants.v"
 
-module StageDFetch(
+module StageDFetch (
 	clk,
 	reset,
-	
+
 	dp,
-	
+
 	dce,
 	da,
 	dd,
-	
+
 	operation_in,
 	ack_in,
 	drdy,
-	
+
 	operation,
 	ack,
 	drdy_in
@@ -26,10 +26,10 @@ module StageDFetch(
 	input reset;
 
 	input      [A_WIDTH - 1:0] dp;
-	
+
 	output                     dce;
 	output     [A_WIDTH - 1:0] da;
-   input      [D_WIDTH - 1:0] dd;
+	input      [D_WIDTH - 1:0] dd;
 
 	input      [`OPCODE_MSB:0] operation_in;
 	input      drdy_in;
@@ -41,7 +41,7 @@ module StageDFetch(
 
 	assign da  = dp;
 	assign dce = !reset;
-	
+
 	always @(posedge clk) begin
 		if (reset) begin
 			operation <= 0;

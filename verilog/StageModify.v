@@ -1,13 +1,13 @@
 `include "Constants.v"
 
-module StageModify(
+module StageModify (
 	clk,
 	reset,
-	
+
 	operation_in,
 	ack_in,
 	drdy,
-	
+
 	operation,
 	ack,
 	drdy_in
