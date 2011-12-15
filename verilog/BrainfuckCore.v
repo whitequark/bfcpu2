@@ -96,11 +96,16 @@ module BrainfuckCore(
 		.clk(clk),
 		.reset(reset),
 
+		/* PC register value, to get instruction address */
 		.pc(pc),
+
+		/* Has ifetch got an instruction last cycle? */
+		.step_pc(pc_ce),
+
+		/* IROM interface */
 		.ice(ice),
 		.ia(ia),
 		.id(id),
-		.step_pc(pc_ce),
 
 		.opcode(idecode_opcode),
 		.ack_in(idecode_ack),
@@ -148,14 +153,19 @@ module BrainfuckCore(
 		.clk(clk),
 		.reset(reset),
 
+		/* DP register value, to get a datum */
 		.dp(dp),
+
+		/* DP register increment and decrement control lines */
 		.dp_ce(dp_ce),
 		.dp_down(dp_down),
 
+		/* DRAM read port interface */
 		.dce(drce),
 		.da(dra),
 		.dd(drd),
 
+		/* Accumulator output */
 		.a(dfetch_a),
 
 		.operation_in(dfetch_operation),
@@ -175,6 +185,7 @@ module BrainfuckCore(
 		.clk(clk),
 		.reset(reset),
 
+		/* Accumulator input and output */
 		.a_in(dfetch_a),
 		.a(modify_a),
 
@@ -197,11 +208,15 @@ module BrainfuckCore(
 		.clk(clk),
 		.reset(reset),
 
+		/* DP register value, to write a datum */
 		.dp(dp),
+
+		/* DRAM write port interface */
 		.dce(dwce),
 		.da(dwa),
 		.dq(dwq),
 
+		/* Accumulator input */
 		.a_in(modify_a),
 
 		.operation_in(dwriteback_operation),
