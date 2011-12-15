@@ -1,4 +1,4 @@
-`define OPCODE_MSB 7
+`define OPCODE_MSB   7
 
 `define OP_INCDP        0	// >
 `define OP_DECDP        1	// <

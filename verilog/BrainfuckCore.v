@@ -85,15 +85,21 @@ module BrainfuckCore(
 	wire [`OPCODE_MSB:0]  dfetch_operation;
 	wire                  dfetch_ack;
 	wire                  dfetch_drdy_in;
+	wire [DD_WIDTH - 1:0] dfetch_a;
 
 	wire [`OPCODE_MSB:0]  modify_operation;
 	wire                  modify_ack;
 	wire                  modify_drdy_in;
+	wire [DD_WIDTH - 1:0] modify_a;
 
 	wire [`OPCODE_MSB:0]  dwriteback_operation;
 	wire                  dwriteback_ack;
 	wire                  dwriteback_drdy_in;
 
+	/*
+	 * Fetch instruction, taking memory delays into
+	 * account.
+	 */
 	StageIFetch #(
 		.A_WIDTH(IA_WIDTH),
 		.D_WIDTH(ID_WIDTH)
@@ -112,7 +118,9 @@ module BrainfuckCore(
 		.drdy(idecode_drdy_in)
 	);
 
-	/* IDecode has fixed 8 bit width */
+	/*
+	 * Decode instruction. IDecode has fixed 8 bit width.
+	 */
 	StageIDecode idecode (
 		.clk(clk),
 		.reset(reset),
@@ -126,6 +134,24 @@ module BrainfuckCore(
 		.drdy(dfetch_drdy_in)
 	);
 
+	/*
+	 * Fetch data byte or manipulate data pointer.
+	 * Data pointer manipulation is done at this stage because
+	 * at the next one it may be too late.
+	 *
+	 *             v
+	 * IF   |>|+|...
+	 * ID     |>|+|...
+	 * DF       |>(+)...
+	 *  M         [>]+|...
+	 * DWB          |>|+|...
+	 *
+	 * At the figure above (a theoretical case where DP is manipulated
+	 * by M stage), the DP is going to be incremented (point [>]), but
+	 * at the exact same time current value will be read to accumulator
+	 * (point (+)), and the old DP value will be latched into the RAM.
+	 * Thus, the value will be read from cell DP-1 instead of DP.
+	 */
 	StageDFetch #(
 		.A_WIDTH(DA_WIDTH),
 		.D_WIDTH(DD_WIDTH)
@@ -134,9 +160,14 @@ module BrainfuckCore(
 		.reset(reset),
 
 		.dp(dp),
+		.dp_ce(dp_ce),
+		.dp_down(dp_down),
+
 		.dce(drce),
 		.da(dra),
 		.dd(drq),
+
+		.a(dfetch_a),
 
 		.operation_in(dfetch_operation),
 		.ack(dfetch_ack),
@@ -151,8 +182,8 @@ module BrainfuckCore(
 		.clk(clk),
 		.reset(reset),
 
-		.dp_ce(dp_ce),
-		.dp_down(dp_down),
+		.a_in(dfetch_a),
+		.a(modify_a),
 
 		.operation_in(modify_operation),
 		.ack(modify_ack),
@@ -174,6 +205,8 @@ module BrainfuckCore(
 		.dce(dwce),
 		.da(dwa),
 		.dq(dwd),
+
+		.a_in(modify_a),
 
 		.operation_in(dwriteback_operation),
 		.ack(dwriteback_ack),

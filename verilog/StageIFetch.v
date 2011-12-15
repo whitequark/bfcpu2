@@ -54,11 +54,12 @@ module StageIFetch (
 			drdy    <= 0;
 			queued  <= 0;
 		end else begin
-			if (queued) begin
+			if (queued)
 				opcode <= id;
-				drdy   <= 1'b1;
-			end
+			else
+				opcode <= 0;
 
+			drdy    <= queued;
 			queued  <= should_fetch;
 		end
 	end
