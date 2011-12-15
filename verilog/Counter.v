@@ -21,15 +21,13 @@ module Counter (
 	always @(posedge clk) begin
 		if (reset)
 			q <= 0;
-		else begin
-			if (ce) begin
-				if (load)
-					q <= d;
-				else if(down)
-					q <= q - 8'b1;
-				else /* !load && !down */
-					q <= q + 8'b1;
-			end
+		else if (ce) begin
+			if (load)
+				q <= d;
+			else if(down)
+				q <= q - 1;
+			else /* !load && !down */
+				q <= q + 1;
 		end
 	end
 

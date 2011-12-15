@@ -84,7 +84,7 @@ module BrainfuckCore(
 	input        crda;
 	output       cack;
 
-	input  [7:0] cq;
+	output [7:0] cq;
 	output       cwre;
 	input        cbsy;
 

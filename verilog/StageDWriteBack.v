@@ -18,11 +18,9 @@ module StageDWriteBack (
 
 	operation_in,
 	ack_in,
-	drdy,
 
 	operation,
-	ack,
-	drdy_in
+	ack
 );
 
 	parameter A_WIDTH = 12;
@@ -44,12 +42,10 @@ module StageDWriteBack (
 	input      [D_WIDTH - 1:0] a_in;
 
 	input      [`OPCODE_MSB:0] operation_in;
-	input      drdy_in;
-	output     ack;
+	output                     ack;
 
 	output reg [`OPCODE_MSB:0] operation;
-	output reg drdy;
-	input      ack_in;
+	input                      ack_in;
 
 	/* Writing to DRAM. */
 	function should_write_d;
