@@ -292,6 +292,7 @@ module BrainfuckCoreTest;
 	reg [1:0] uart_wait = 2'b00;
 	always @(posedge clk) begin
 		if (cwre) begin
+			$write("%c", cq);
 			cbsy      <= 1'b1;
 			uart_wait <= 2'b11;
 		end else begin
