@@ -58,42 +58,52 @@ module StageExecute (
 	/*
 	 * Data pointer manipulation
 	 */
-	assign dp_ce   = (operation_in[`OP_INCDP] || operation_in[`OP_DECDP]);
-	assign dp_down =  operation_in[`OP_DECDP];
+	assign dp_ce   = ack_in && (operation_in[`OP_INCDP] || operation_in[`OP_DECDP]);
+	assign dp_down = ack_in &&  operation_in[`OP_DECDP];
 
 	output reg [A_WIDTH - 1:0] dp_cache;
 
 	/*
+	 * RAW hazard handling: register forwarding
+	 */
+	wire dirty_datum;
+	assign dirty_datum = operation[`OP_INC] || operation[`OP_DEC] ||
+				operation[`OP_IN];
+
+	wire do_mem_fetch, do_reg_forward;
+
+	assign do_mem_fetch   = need_fetch_mem && !dirty_datum;
+	assign do_reg_forward = need_fetch_mem && dirty_datum;
+
+	/*
 	 * Reading from DRAM
 	 */
-	function should_fetch_d;
-	input [`OPCODE_MSB:0] operation;
-	begin
-		should_fetch_d = (operation[`OP_INC] || operation[`OP_DEC] ||
-					operation[`OP_INCDP] || operation[`OP_DECDP] || /* Prefetch */
-					operation[`OP_OUT] || operation[`OP_LOOPBEGIN] ||
-					operation[`OP_LOOPEND]);
-	end
-	endfunction
+	wire need_fetch_mem;
+	assign need_fetch_mem = (operation_in[`OP_INC] || operation_in[`OP_DEC] ||
+					operation_in[`OP_OUT] || operation_in[`OP_LOOPBEGIN] ||
+					operation_in[`OP_LOOPEND]);
 
 	assign da  = dp;
-	assign dce = should_fetch_d(operation_in);
+	assign dce = do_mem_fetch;
+
+	wire   [D_WIDTH - 1:0] data_input;
+	assign                 data_input = do_reg_forward ? a : dd;
+
+	assign datum_ready = (do_mem_fetch && prefetched) || do_reg_forward;
 
 	/*
 	 * Reading from EXT
 	 */
-	function should_fetch_x;
-	input [`OPCODE_MSB:0] operation;
-	begin
-		should_fetch_x = operation[`OP_IN];
-	end
-	endfunction
+	wire need_fetch_ext;
+	assign need_fetch_ext = operation_in[`OP_IN];
 
-	assign cack = crda && should_fetch_x(operation_in);
+	assign cack = crda && need_fetch_ext;
 
+	/*
+	 * Wait states
+	 */
 	wire ext_wait;
-	assign ext_wait = (should_fetch_x(operation_in) && !crda) ||
-				(should_fetch_d(operation_in) && !prefetched);
+	assign ext_wait = (need_fetch_ext && !crda) || (do_mem_fetch && !prefetched);
 
 	/*
 	 * ACKing the previous stage
@@ -101,20 +111,19 @@ module StageExecute (
 	assign ack = ack_in && !ext_wait;
 
 	always @(posedge clk) begin
-		if (reset) begin
+		if (reset)
 			prefetched <= 0;
+		else
+			prefetched <= do_mem_fetch;
+	end
+
+	always @(posedge clk) begin
+		if (reset) begin
 			operation  <= 0;
 
 			dp_cache   <= 0;
 			a          <= 0;
 		end else begin
-			/*
-			 * At the second clock cycle we have already fetched the
-			 * datum, whatever may be the purpose.
-			 */
-			if (should_fetch_d(operation_in))
-				prefetched <= 1'b1;
-
 			dp_cache   <= dp;
 
 			if (ack_in && ext_wait) begin
@@ -123,14 +132,14 @@ module StageExecute (
 			end else if(ack_in) begin
 				operation <= operation_in;
 
-				if (should_fetch_d(operation_in) && prefetched)
-					if (operation[`OP_INC])
-						a   <= dd + 1;
-					else if (operation[`OP_DEC])
-						a   <= dd - 1;
+				if (datum_ready)
+					if (operation_in[`OP_INC])
+						a   <= data_input + 1;
+					else if (operation_in[`OP_DEC])
+						a   <= data_input - 1;
 					else
-						a   <= dd;
-				else if (should_fetch_x(operation_in) && crda)
+						a   <= data_input;
+				else if (need_fetch_ext && crda)
 					a      <= cd;
 				else
 					a      <= 0;

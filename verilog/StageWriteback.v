@@ -50,33 +50,25 @@ module StageWriteback (
 	/*
 	 * Writing to DRAM
 	 */
-	function should_write_d;
-	input [7:0] operation;
-	begin
-		should_write_d = (operation[`OP_INC] || operation[`OP_DEC] ||
-					operation[`OP_IN]);
-	end
-	endfunction
+	wire need_write_mem;
+	assign need_write_mem = (operation_in[`OP_INC] || operation_in[`OP_DEC] ||
+					operation_in[`OP_IN]);
 
 	assign da  = dp;
-	assign dce = should_write_d(operation_in);
+	assign dce = need_write_mem;
 	assign dq  = a_in;
 
 	/*
 	 * Writing to EXT
 	 */
-	function should_write_x;
-	input [7:0] operation;
-	begin
-		should_write_x = operation[`OP_OUT];
-	end
-	endfunction
+	wire need_write_ext;
+	assign need_write_ext = operation_in[`OP_OUT];
 
 	assign cq   = a_in;
-	assign cwre = !cbsy && should_write_x(operation_in);
+	assign cwre = !cbsy && need_write_ext;
 
 	wire ext_wait;
-	assign ext_wait = (should_write_x(operation_in) && cbsy);
+	assign ext_wait = need_write_ext && cbsy;
 
 	/*
 	 * ACKing the previous stage
