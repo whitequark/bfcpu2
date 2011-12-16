@@ -68,7 +68,10 @@ module StageExecute (
 	 */
 	wire dirty_datum;
 	assign dirty_datum = operation[`OP_INC] || operation[`OP_DEC] ||
-				operation[`OP_IN];
+				operation[`OP_IN] ||
+				/* These do not make change the datum. It is an optimization: *
+				 * memfetch costs 2 cycles, and regforward only one.          */
+				operation[`OP_LOOPBEGIN] || operation[`OP_LOOPEND];
 
 	wire do_mem_fetch, do_reg_forward;
 

@@ -281,7 +281,8 @@ module BrainfuckCoreTest;
 
 		`reset
 
-		#160; crda = 1; cd = 8'h42;
+		#161; crda = 1; cd = 8'h42;
+		#20; cd = 8'h43;
 		#20; crda = 0; cd = 0;
 	end
 
