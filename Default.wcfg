@@ -23,57 +23,68 @@
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="CustomSignalColor">#808080</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/pc" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">pc[11:0]</obj_property>
-      <obj_property name="ObjectShortName">pc[11:0]</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#ffa500</obj_property>
-   </wvobject>
    <wvobject fp_name="/BrainfuckCoreTest/uut/pc_ce" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">pc_ce</obj_property>
       <obj_property name="ObjectShortName">pc_ce</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="CustomSignalColor">#00ffff</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/ifetch/queued" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">queued</obj_property>
-      <obj_property name="ObjectShortName">queued</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/pc" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">pc[11:0]</obj_property>
+      <obj_property name="ObjectShortName">pc[11:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffa500</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/ice" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">ice</obj_property>
+      <obj_property name="ObjectShortName">ice</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/ia" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">ia[11:0]</obj_property>
+      <obj_property name="ObjectShortName">ia[11:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffff00</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/id" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">id[7:0]</obj_property>
+      <obj_property name="ObjectShortName">id[7:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/idecode_opcode" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">idecode_opcode[7:0]</obj_property>
+      <obj_property name="ObjectShortName">idecode_opcode[7:0]</obj_property>
+      <obj_property name="Radix">ASCIIRADIX</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/execute_operation" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">execute_operation[7:0]</obj_property>
+      <obj_property name="ObjectShortName">execute_operation[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/writeback_operation" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">writeback_operation[7:0]</obj_property>
+      <obj_property name="ObjectShortName">writeback_operation[7:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/execute/do_mem_fetch" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">do_mem_fetch</obj_property>
+      <obj_property name="ObjectShortName">do_mem_fetch</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/execute/do_reg_forward" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">do_reg_forward</obj_property>
+      <obj_property name="ObjectShortName">do_reg_forward</obj_property>
+   </wvobject>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/execute_a" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">execute_a[7:0]</obj_property>
+      <obj_property name="ObjectShortName">execute_a[7:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ffa500</obj_property>
    </wvobject>
    <wvobject fp_name="/BrainfuckCoreTest/uut/dp" type="array" db_ref_id="1">
       <obj_property name="ElementShortName">dp[11:0]</obj_property>
       <obj_property name="ObjectShortName">dp[11:0]</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="CustomSignalColor">#ffa500</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/dp_ce" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">dp_ce</obj_property>
-      <obj_property name="ObjectShortName">dp_ce</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#00ffff</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/dp_down" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">dp_down</obj_property>
-      <obj_property name="ObjectShortName">dp_down</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#00ffff</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/ice" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">ice</obj_property>
-      <obj_property name="ObjectShortName">ice</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#00ffff</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/ia" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">ia[11:0]</obj_property>
-      <obj_property name="ObjectShortName">ia[11:0]</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/iq" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">iq[7:0]</obj_property>
-      <obj_property name="ObjectShortName">iq[7:0]</obj_property>
-      <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
    </wvobject>
    <wvobject fp_name="/BrainfuckCoreTest/uut/drce" type="logic" db_ref_id="1">
       <obj_property name="ElementShortName">drce</obj_property>
@@ -85,11 +96,11 @@
       <obj_property name="ElementShortName">dra[11:0]</obj_property>
       <obj_property name="ObjectShortName">dra[11:0]</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
+      <obj_property name="CustomSignalColor">#ffff00</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/drq" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">drq[7:0]</obj_property>
-      <obj_property name="ObjectShortName">drq[7:0]</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/drd" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">drd[7:0]</obj_property>
+      <obj_property name="ObjectShortName">drd[7:0]</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="CustomSignalColor">#ff00ff</obj_property>
    </wvobject>
@@ -103,60 +114,62 @@
       <obj_property name="ElementShortName">dwa[11:0]</obj_property>
       <obj_property name="ObjectShortName">dwa[11:0]</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
-      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
+      <obj_property name="CustomSignalColor">#ffff00</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/dwd" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">dwd[7:0]</obj_property>
-      <obj_property name="ObjectShortName">dwd[7:0]</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/dwq" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">dwq[7:0]</obj_property>
+      <obj_property name="ObjectShortName">dwq[7:0]</obj_property>
       <obj_property name="UseCustomSignalColor">true</obj_property>
       <obj_property name="CustomSignalColor">#ff00ff</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/ifetch_opcode" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">ifetch_opcode[7:0]</obj_property>
-      <obj_property name="ObjectShortName">ifetch_opcode[7:0]</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/cwre" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">cwre</obj_property>
+      <obj_property name="ObjectShortName">cwre</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/ifetch_ack_in" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">ifetch_ack_in</obj_property>
-      <obj_property name="ObjectShortName">ifetch_ack_in</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/cbsy" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">cbsy</obj_property>
+      <obj_property name="ObjectShortName">cbsy</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/ifetch_drdy" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">ifetch_drdy</obj_property>
-      <obj_property name="ObjectShortName">ifetch_drdy</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/cq" type="array" db_ref_id="1">
+      <obj_property name="DisplayName">label</obj_property>
+      <obj_property name="ElementShortName">cq[7:0]</obj_property>
+      <obj_property name="ObjectShortName">cq[7:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
+      <obj_property name="label">cq[7:0]</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/idecode_operation" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">idecode_operation[7:0]</obj_property>
-      <obj_property name="ObjectShortName">idecode_operation[7:0]</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/crda" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">crda</obj_property>
+      <obj_property name="ObjectShortName">crda</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/idecode_ack_in" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">idecode_ack_in</obj_property>
-      <obj_property name="ObjectShortName">idecode_ack_in</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/cack" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">cack</obj_property>
+      <obj_property name="ObjectShortName">cack</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#00ffff</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/idecode_drdy" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">idecode_drdy</obj_property>
-      <obj_property name="ObjectShortName">idecode_drdy</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/cd" type="array" db_ref_id="1">
+      <obj_property name="ElementShortName">cd[7:0]</obj_property>
+      <obj_property name="ObjectShortName">cd[7:0]</obj_property>
+      <obj_property name="UseCustomSignalColor">true</obj_property>
+      <obj_property name="CustomSignalColor">#ff00ff</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/dfetch_operation" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">dfetch_operation[7:0]</obj_property>
-      <obj_property name="ObjectShortName">dfetch_operation[7:0]</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/idecode_ack" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">idecode_ack</obj_property>
+      <obj_property name="ObjectShortName">idecode_ack</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/dfetch_ack_in" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">dfetch_ack_in</obj_property>
-      <obj_property name="ObjectShortName">dfetch_ack_in</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/execute_ack" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">execute_ack</obj_property>
+      <obj_property name="ObjectShortName">execute_ack</obj_property>
    </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/dfetch_drdy" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">dfetch_drdy</obj_property>
-      <obj_property name="ObjectShortName">dfetch_drdy</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/modify_operation" type="array" db_ref_id="1">
-      <obj_property name="ElementShortName">modify_operation[7:0]</obj_property>
-      <obj_property name="ObjectShortName">modify_operation[7:0]</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/modify_ack_in" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">modify_ack_in</obj_property>
-      <obj_property name="ObjectShortName">modify_ack_in</obj_property>
-   </wvobject>
-   <wvobject fp_name="/BrainfuckCoreTest/uut/modify_drdy" type="logic" db_ref_id="1">
-      <obj_property name="ElementShortName">modify_drdy</obj_property>
-      <obj_property name="ObjectShortName">modify_drdy</obj_property>
+   <wvobject fp_name="/BrainfuckCoreTest/uut/writeback_ack" type="logic" db_ref_id="1">
+      <obj_property name="ElementShortName">writeback_ack</obj_property>
+      <obj_property name="ObjectShortName">writeback_ack</obj_property>
    </wvobject>
 </wave_config>
