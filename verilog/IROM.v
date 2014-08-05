@@ -28,7 +28,7 @@ module IROM (
 		for(i = 0; i < A_DEPTH; i = i + 1)
 			memory[i] = 0;
 
-		$readmemh("irom.h", memory);
+		// $readmemh("irom.h", memory);
 	end
 
 endmodule

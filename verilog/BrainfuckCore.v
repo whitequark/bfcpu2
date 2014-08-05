@@ -279,21 +279,21 @@ module BrainfuckCoreTest;
 		reset = 0;
 		crda = 0;
 
-		`reset
+		// `reset
 
-		#161; crda = 1; cd = 8'h42;
-		#20; cd = 8'h43;
-		#20; crda = 0; cd = 0;
+		// #161; crda = 1; cd = 8'h42;
+		// #20; cd = 8'h43;
+		// #20; crda = 0; cd = 0;
 	end
 
-	always begin
-		`step
-	end
+	// always begin
+	// 	`step
+	// end
 
 	reg [1:0] uart_wait = 2'b00;
 	always @(posedge clk) begin
 		if (cwre) begin
-			$write("%c", cq);
+			// $write("%c", cq);
 			cbsy      <= 1'b1;
 			uart_wait <= 2'b11;
 		end else begin

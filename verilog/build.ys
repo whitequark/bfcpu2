@@ -1,0 +1,3 @@
+read_verilog -defer BrainfuckCore.v Counter.v DRAM.v IROM.v Stack.v StageExecute.v StageIDecode.v StageIFetch.v StageModify.v StageWriteback.v
+hierarchy -check -top BrainfuckCoreTest
+synth_xilinx
